@@ -10,16 +10,17 @@ public class Main {
     static final Dimension tamanho = new Dimension(1000, 750);
     static final Object[][] desenvolvedores = new Object[][]{{0, "Zeca Urubu", 69, "CU Corp.", String.format("%.2f", 30000.00), 13},
             {1, "Renato", 34, "Epic Games", String.format("%.2f", 1500.00), 84}},
-                            jogos = new Object[][]{{0, 0, "Zecacraft", "30/02/2022", "8K", String.format("%.2f", 69.00), 5},
-                                    {1, 0, "Pica's Adventure", "11/09/2030", 0, String.format("%.2f", 300.00), "Indefinido"},
-                                    {2, 1, "Enforquenite", "01/09/1923", "1M", String.format("%.2f", 0.01), 4.5},
-                                    {3, 1, "Blox Fruits", "02/06/2020", "8.3B", String.format("%.2f", 0.00), 4.3}};
+            jogos = new Object[][]{{0, 0, "Zecacraft", "30/02/2022", "8K", String.format("%.2f", 69.00), 5},
+                    {1, 0, "Pica's Adventure", "11/09/2030", 0, String.format("%.2f", 300.00), "Indefinido"},
+                    {2, 1, "Enforquenite", "01/09/1923", "1M", String.format("%.2f", 0.01), 4.5},
+                    {3, 1, "Blox Fruits", "02/06/2020", "8.3B", String.format("%.2f", 0.00), 4.3}};
     static final String[] nomesVarDev = new String[]{"ID", "Nome", "Idade", "Empresa", "Salário", "Horas"},
-                          nomesVarJogos = new String[]{"ID", "ID Dev", "Nome", "Lança Em", "Vendas", "Preço", "Avaliação"};
+            nomesVarJogos = new String[]{"ID", "ID Dev", "Nome", "Lança Em", "Vendas", "Preço", "Avaliação"};
     static JButton btnCriar, btnEditar, btnSalvar, btnSair;
     static JLabel lbDesenvolvedores, lbJogos;
     static JTable tbDesenvolvedores, tbJogos;
     static int mouseX, mouseY;
+
     public static void main(String[] args) {
         janela = new JFrame("Banco de Dados");
         Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
@@ -27,7 +28,7 @@ public class Main {
         janela.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         janela.setSize(tamanho);
         janela.setUndecorated(true);
-        janela.getRootPane().setBorder(BorderFactory.createMatteBorder(3, 3,3,3, Color.GRAY));
+        janela.getRootPane().setBorder(BorderFactory.createMatteBorder(3, 3, 3, 3, Color.GRAY));
         janela.setResizable(false);
 
         JPanel painelArrastavel = new JPanel();
@@ -50,22 +51,20 @@ public class Main {
         painelArrastavel.setBackground(Color.LIGHT_GRAY);
 
         btnCriar = new JButton("Novo");
-        btnCriar.setBounds(5,5,95,30);
+        btnCriar.setBounds(5, 5, 95, 30);
         painelArrastavel.add(btnCriar);
 
         btnEditar = new JButton("Editar");
-        btnEditar.setBounds(110,5,95,30);
+        btnEditar.setBounds(110, 5, 95, 30);
         painelArrastavel.add(btnEditar);
 
         btnSair = new JButton("Sair");
-        btnSair.setBounds(tamanho.width - 70,5,60,30);
-        btnSair.addActionListener(e -> {
-            janela.dispatchEvent(new WindowEvent(janela, WindowEvent.WINDOW_CLOSING));
-        });
+        btnSair.setBounds(tamanho.width - 70, 5, 60, 30);
+        btnSair.addActionListener(e -> janela.dispatchEvent(new WindowEvent(janela, WindowEvent.WINDOW_CLOSING)));
         painelArrastavel.add(btnSair);
 
         btnSalvar = new JButton("Salvar");
-        btnSalvar.setBounds(215,5,95,30);
+        btnSalvar.setBounds(215, 5, 95, 30);
         painelArrastavel.add(btnSalvar);
 
         janela.add(painelArrastavel);
@@ -78,15 +77,13 @@ public class Main {
         tbDesenvolvedores = new JTable(desenvolvedores, nomesVarDev);
         tbDesenvolvedores.setDefaultEditor(Object.class, null);
         DefaultTableCellRenderer centerizarTexto = new DefaultTableCellRenderer();
-        centerizarTexto.setHorizontalAlignment( JLabel.CENTER );
-        for (int i = 0; i < tbDesenvolvedores.getColumnCount(); i++)
-        {
+        centerizarTexto.setHorizontalAlignment(JLabel.CENTER);
+        for (int i = 0; i < tbDesenvolvedores.getColumnCount(); i++) {
             var col = tbDesenvolvedores.getColumnModel().getColumn(i);
             col.setCellRenderer(centerizarTexto);
             if (i == 0 || i == 2 || i == 5)
                 col.setPreferredWidth(10);
-            else if (i == 4)
-            {
+            else if (i == 4) {
                 col.setPreferredWidth(50);
             }
         }
@@ -102,8 +99,7 @@ public class Main {
 
         tbJogos = new JTable(jogos, nomesVarJogos);
         tbJogos.setDefaultEditor(Object.class, null);
-        for (int i = 0; i < tbJogos.getColumnCount(); i++)
-        {
+        for (int i = 0; i < tbJogos.getColumnCount(); i++) {
             var col = tbJogos.getColumnModel().getColumn(i);
             col.setCellRenderer(centerizarTexto);
             if (i == 0)
