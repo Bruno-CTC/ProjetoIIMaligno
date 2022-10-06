@@ -1,5 +1,7 @@
 package com.company;
 
+import com.company.sql.BD;
+
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
