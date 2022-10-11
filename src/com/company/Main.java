@@ -6,24 +6,78 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.lang.reflect.Array;
+import java.util.Vector;
+
+import com.company.classes.*;
 
 public class Main {
     static JFrame janela;
     static final Dimension tamanho = new Dimension(1000, 750);
-    static final Object[][] desenvolvedores = new Object[][]{{0, "Zeca Urubu", 69, "CU Corp.", String.format("%.2f", 30000.00), 13},
-            {1, "Renato", 34, "Epic Games", String.format("%.2f", 1500.00), 84}},
-            jogos = new Object[][]{{0, 0, "Zecacraft", "30/02/2022", "8K", String.format("%.2f", 69.00), 5},
-                    {1, 0, "Pica's Adventure", "11/09/2030", 0, String.format("%.2f", 300.00), "Indefinido"},
-                    {2, 1, "Enforquenite", "01/09/1923", "1M", String.format("%.2f", 0.01), 4.5},
-                    {3, 1, "Blox Fruits", "02/06/2020", "8.3B", String.format("%.2f", 0.00), 4.3}};
-    static final String[] nomesVarDev = new String[]{"ID", "Nome", "Idade", "Empresa", "Salário", "Horas"},
-            nomesVarJogos = new String[]{"ID", "ID Dev", "Nome", "Lança Em", "Vendas", "Preço", "Avaliação"};
     static JButton btnCriar, btnEditar, btnSalvar, btnSair;
     static JLabel lbDesenvolvedores, lbJogos;
     static JTable tbDesenvolvedores, tbJogos;
     static int mouseX, mouseY;
 
     public static void main(String[] args) {
+        Vector<Vector<Object>> desenvolvedores = new Vector<>();
+        Vector<String> nomesVarDev = new Vector<>();
+        nomesVarDev.add("ID");
+        nomesVarDev.add("Nome");
+        nomesVarDev.add("Idade");
+        nomesVarDev.add("Empresa");
+        nomesVarDev.add("Salário");
+        nomesVarDev.add("Horas");
+        try{
+            var result = Desenvolvedores.getDesenvolvedores();
+            while (result.next())
+            {
+                Vector<Object> vecDev = new Vector<>();
+                vecDev.add(result.getInt(1));
+                vecDev.add(result.getString(2));
+                vecDev.add(result.getInt(3));
+                vecDev.add(result.getString(4));
+                vecDev.add(result.getDouble(5));
+                vecDev.add(result.getInt(6));
+                desenvolvedores.add(vecDev);
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+        }
+
+        Vector<Vector<Object>> jogos = new Vector<>();
+        Vector<String> nomesVarJogos = new Vector<>();
+        nomesVarJogos.add("ID");
+        nomesVarJogos.add("ID Dev.");
+        nomesVarJogos.add("Nome");
+        nomesVarJogos.add("Data Lanc.");
+        nomesVarJogos.add("Vendas");
+        nomesVarJogos.add("Preço");
+        nomesVarJogos.add("Avaliação");
+        try{
+            var result = Jogos.getJogos();
+            while (result.next())
+            {
+                Vector<Object> vecJogo = new Vector<>();
+                vecJogo.add(result.getInt(1));
+                vecJogo.add(result.getInt(2));
+                vecJogo.add(result.getString(3));
+                vecJogo.add(result.getDate(4));
+                vecJogo.add(result.getLong(5));
+                vecJogo.add(result.getFloat(6));
+                vecJogo.add(result.getFloat(7));
+                jogos.add(vecJogo);
+            }
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            System.out.println(ex.getMessage());
+        }
+
         janela = new JFrame("Banco de Dados");
         Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
         janela.setLocation(size.width / 2 - tamanho.width / 2, size.height / 2 - tamanho.height / 2);
@@ -52,12 +106,17 @@ public class Main {
         painelArrastavel.setBorder(BorderFactory.createMatteBorder(0, 0, 2, 0, Color.GRAY));
         painelArrastavel.setBackground(Color.LIGHT_GRAY);
 
-        btnCriar = new JButton("Novo");
-        btnCriar.setBounds(5, 5, 95, 30);
-        painelArrastavel.add(btnCriar);
+        btnCriar = new JButton("Novo Dev");
+        btnCriar.setBounds(10, tamanho.height - 40, 105, 25);
+        janela.add(btnCriar);
+
+        btnCriar = new JButton("Novo Jogo");
+        btnCriar.setBounds(510, tamanho.height - 40, 105, 25);
+        janela.add(btnCriar);
+        //painelArrastavel.add(btnCriar);
 
         btnEditar = new JButton("Editar");
-        btnEditar.setBounds(110, 5, 95, 30);
+        btnEditar.setBounds(5, 5, 95, 30);
         painelArrastavel.add(btnEditar);
 
         btnSair = new JButton("Sair");
@@ -66,7 +125,7 @@ public class Main {
         painelArrastavel.add(btnSair);
 
         btnSalvar = new JButton("Salvar");
-        btnSalvar.setBounds(215, 5, 95, 30);
+        btnSalvar.setBounds(110, 5, 95, 30);
         painelArrastavel.add(btnSalvar);
 
         janela.add(painelArrastavel);
@@ -75,9 +134,7 @@ public class Main {
         lbDesenvolvedores.setFont(new Font("Monospaced", Font.PLAIN, 40));
         lbDesenvolvedores.setBounds(10, 35, 450, 60);
         janela.add(lbDesenvolvedores);
-
         tbDesenvolvedores = new JTable(desenvolvedores, nomesVarDev);
-        tbDesenvolvedores.setDefaultEditor(Object.class, null);
         DefaultTableCellRenderer centerizarTexto = new DefaultTableCellRenderer();
         centerizarTexto.setHorizontalAlignment(JLabel.CENTER);
         for (int i = 0; i < tbDesenvolvedores.getColumnCount(); i++) {
@@ -100,7 +157,6 @@ public class Main {
         janela.add(lbJogos);
 
         tbJogos = new JTable(jogos, nomesVarJogos);
-        tbJogos.setDefaultEditor(Object.class, null);
         for (int i = 0; i < tbJogos.getColumnCount(); i++) {
             var col = tbJogos.getColumnModel().getColumn(i);
             col.setCellRenderer(centerizarTexto);
@@ -124,5 +180,16 @@ public class Main {
 
         janela.setLayout(null);
         janela.setVisible(true);
+        boolean loop = true;
+        while (loop)
+        {
+            try {
+                Thread.sleep(1000 / 60);
+            }
+            catch (Exception ex)
+            {
+                loop = false;
+            }
+        }
     }
 }

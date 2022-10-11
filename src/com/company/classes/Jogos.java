@@ -16,7 +16,7 @@ public class Jogos
             String sql;
 
             sql = "SELECT * " +
-                    "FROM JOGOS " +
+                    "FROM JOGOS.JOGO" +
                     "WHERE IDJOGO = ?";
 
             BD.COMANDO.prepareStatement (sql);
@@ -25,27 +25,7 @@ public class Jogos
 
             MeuResultSet resultado = (MeuResultSet)BD.COMANDO.executeQuery ();
 
-            retorno = resultado.first(); // pode-se usar resultado.last() ou resultado.next() ou resultado.previous() ou resultado.absotule(numeroDaLinha)
-
-            /* // ou, se preferirmos,
-
-            String sql;
-
-            sql = "SELECT COUNT(*) AS QUANTOS " +
-                  "FROM LIVROS " +
-                  "WHERE CODIGO = ?";
-
-            BD.COMANDO.prepareStatement (sql);
-
-            BD.COMANDO.setInt (1, codigo);
-
-            MeuResultSet resultado = (MeuResultSet)BD.COMANDO.executeQuery ();
-
-            resultado.first();
-
-            retorno = resultado.getInt("QUANTOS") != 0;
-
-            */
+            retorno = resultado.first();
         }
         catch (SQLException erro)
         {
@@ -65,7 +45,7 @@ public class Jogos
         {
             String sql;
 
-            sql = "INSERT INTO JOGOS " +
+            sql = "INSERT INTO JOGOS.JOGO" +
                     "(IDJOGO,IDDESENVOLVEDOR,AVALIACAO,VENDAS,NOME,DATALANCAMENTO,PRECO) " +
                     "VALUES " +
                     "(?,?,?,?,?,?,?)";
@@ -100,7 +80,7 @@ public class Jogos
         {
             String sql;
 
-            sql = "DELETE FROM JOGOS " +
+            sql = "DELETE FROM JOGOS.JOGO" +
                     "WHERE IDJOGO=?";
 
             BD.COMANDO.prepareStatement (sql);
@@ -130,7 +110,7 @@ public class Jogos
         {
             String sql;
 
-            sql = "UPDATE JOGOS " +
+            sql = "UPDATE JOGOS.JOGO " +
                     "SET IDJOGO=? " +
                     "SET IDDESENVOLVEDOR=? " +
                     "SET AVALIACAO=? " +
@@ -170,7 +150,7 @@ public class Jogos
             String sql;
 
             sql = "SELECT * " +
-                    "FROM JOGOS " +
+                    "FROM JOGOS.JOGO " +
                     "WHERE IDJOGO = ?";
 
             BD.COMANDO.prepareStatement (sql);
@@ -207,7 +187,7 @@ public class Jogos
             String sql;
 
             sql = "SELECT * " +
-                    "FROM JOGOS";
+                    "FROM JOGOS.JOGO";
 
             BD.COMANDO.prepareStatement (sql);
 

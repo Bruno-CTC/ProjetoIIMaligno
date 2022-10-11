@@ -17,7 +17,7 @@ public class Desenvolvedores
             String sql;
 
             sql = "SELECT * " +
-                    "FROM DESENVOLVEDORES " +
+                    "FROM JOGOS.DESENVOLVEDOR " +
                     "WHERE IDDESENVOLVEDOR = ?";
 
             BD.COMANDO.prepareStatement (sql);
@@ -26,27 +26,7 @@ public class Desenvolvedores
 
             MeuResultSet resultado = (MeuResultSet)BD.COMANDO.executeQuery ();
 
-            retorno = resultado.first(); // pode-se usar resultado.last() ou resultado.next() ou resultado.previous() ou resultado.absotule(numeroDaLinha)
-
-            /* // ou, se preferirmos,
-
-            String sql;
-
-            sql = "SELECT COUNT(*) AS QUANTOS " +
-                  "FROM LIVROS " +
-                  "WHERE CODIGO = ?";
-
-            BD.COMANDO.prepareStatement (sql);
-
-            BD.COMANDO.setInt (1, codigo);
-
-            MeuResultSet resultado = (MeuResultSet)BD.COMANDO.executeQuery ();
-
-            resultado.first();
-
-            retorno = resultado.getInt("QUANTOS") != 0;
-
-            */
+            retorno = resultado.first();
         }
         catch (SQLException erro)
         {
@@ -66,7 +46,7 @@ public class Desenvolvedores
         {
             String sql;
 
-            sql = "INSERT INTO DESENVOLVEDORES " +
+            sql = "INSERT INTO JOGOS.DESENVOLVEDOR " +
                     "(IDDESENVOLVEDOR,HORAS,IDADE,NOME,EMPRESA,SALARIO) " +
                     "VALUES " +
                     "(?,?,?,?,?,?)";
@@ -100,7 +80,7 @@ public class Desenvolvedores
         {
             String sql;
 
-            sql = "DELETE FROM DESENVOLVEDORES " +
+            sql = "DELETE FROM JOGOS.DESENVOLVEDOR " +
                     "WHERE IDDESENVOLVEDOR=?";
 
             BD.COMANDO.prepareStatement (sql);
@@ -130,7 +110,7 @@ public class Desenvolvedores
         {
             String sql;
 
-            sql = "UPDATE DESENVOLVEDORES " +
+            sql = "UPDATE JOGOS.DESENVOLVEDOR " +
                     "SET IDDESENVOLVEDOR=? " +
                     "SET HORAS=? " +
                     "SET IDADE=? " +
@@ -168,7 +148,7 @@ public class Desenvolvedores
             String sql;
 
             sql = "SELECT * " +
-                    "FROM DESENVOLVEDORES " +
+                    "FROM JOGOS.DESENVOLVEDOR " +
                     "WHERE IDDESENVOLVEDOR = ?";
 
             BD.COMANDO.prepareStatement (sql);
@@ -204,7 +184,7 @@ public class Desenvolvedores
             String sql;
 
             sql = "SELECT * " +
-                    "FROM DESENVOLVEDORES";
+                    "FROM JOGOS.DESENVOLVEDOR";
 
             BD.COMANDO.prepareStatement (sql);
 
@@ -212,7 +192,8 @@ public class Desenvolvedores
         }
         catch (SQLException erro)
         {
-            throw new Exception ("Erro ao recuperar desenvolvedores");
+            erro.printStackTrace();
+            System.out.println(erro.getMessage());
         }
 
         return resultado;
