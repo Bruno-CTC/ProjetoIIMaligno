@@ -13,12 +13,12 @@ public class BD {
                     new MeuPreparedStatement (
                             "com.microsoft.sqlserver.jdbc.SQLServerDriver",
                             "jdbc:sqlserver://regulus.cotuca.unicamp.br;databasename=BD22123",
-                            "BD22123", "suspeito hein vai rouba minha senha n");
+                            "BD22123", "x2f9V4A5");
         }
         catch (Exception erro)
         {
             System.out.println(erro);
-            System.err.println ("Ocorreram problemas de conexao com o BD");
+            System.err.println (erro.getMessage());
             System.exit(0); // aborta o programa
         }
 

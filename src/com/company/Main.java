@@ -1,12 +1,9 @@
 package com.company;
 
-import com.company.sql.BD;
-
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.reflect.Array;
 import java.util.Vector;
 
 import com.company.classes.*;
@@ -117,6 +114,9 @@ public class Main {
 
         btnEditar = new JButton("Editar");
         btnEditar.setBounds(5, 5, 95, 30);
+        btnEditar.addActionListener(e -> {
+            new JanelaEditarJogo(janela);
+        });
         painelArrastavel.add(btnEditar);
 
         btnSair = new JButton("Sair");
