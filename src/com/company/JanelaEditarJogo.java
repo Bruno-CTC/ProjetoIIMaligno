@@ -1,10 +1,21 @@
 package com.company;
 
 import javax.swing.*;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
+import java.util.concurrent.atomic.AtomicReference;
+
+import com.company.classes.*;
 
 public class JanelaEditarJogo extends JFrame {
-    public JanelaEditarJogo(JFrame parent) {
+    int idDev;
+    String nome;
+    long vendas;
+    float preco;
+    int aval;
+    public JanelaEditarJogo(JFrame parent, int idJogo) {
         super("Criar");
+        AtomicReference<Date> data = null;
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(500, 500);
         setLocationRelativeTo(parent);
@@ -57,5 +68,28 @@ public class JanelaEditarJogo extends JFrame {
         JButton btnSalvar = new JButton("Salvar");
         btnSalvar.setBounds(200, 425, 100, 30);
         add(btnSalvar);
+        btnSalvar.addActionListener(e -> {
+            idDev = Integer.parseInt(txtIDDev.getText());
+            nome = txtNome.getText();
+            try{
+                data.set((Date) new SimpleDateFormat("dd/MM/yyyy").parse(txtData.getText()));
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+                System.out.println(ex.getMessage());
+            }
+            vendas = Long.parseLong(txtVendas.getText());
+            preco = Float.parseFloat(txtPreco.getText());
+            aval = Integer.parseInt(txtAvaliacao.getText());
+            try{
+                var novoJogo = new Jogo(idJogo, idDev, aval, vendas, nome, data.get(), preco);
+                Jogos.incluir(novoJogo);
+            }
+            catch (Exception ex)
+            {
+                System.out.println(ex.getMessage());
+            }
+        });
     }
 }

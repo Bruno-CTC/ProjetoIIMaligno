@@ -1,9 +1,18 @@
 package com.company;
 
+import com.company.classes.*;
+
 import javax.swing.*;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 public class JanelaEditarDesenvolvedor extends JFrame {
-    public JanelaEditarDesenvolvedor(JFrame parent) {
+    int horas;
+    int idade;
+    String nome;
+    String empresa;
+    float salario;
+    public JanelaEditarDesenvolvedor(JFrame parent, int idDev) {
         super("Criar");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(500, 500);
@@ -50,5 +59,18 @@ public class JanelaEditarDesenvolvedor extends JFrame {
         JButton btnSalvar = new JButton("Salvar");
         btnSalvar.setBounds(200, 425, 100, 30);
         add(btnSalvar);
-    }
+        btnSalvar.addActionListener(e -> {
+            horas = Integer.parseInt(txtHoras.getText());
+            idade = Integer.parseInt(txtIdade.getText());
+            nome = txtNome.getText();
+            empresa = txtEmpresa.getText();
+            salario = Float.parseFloat(txtSalario.getText());
+            try {
+                var novoDev = new Desenvolvedor(idDev, horas, idade, nome, empresa, salario);
+                Desenvolvedores.incluir(novoDev);
+            } catch (Exception ex) {
+                System.out.println(ex.getMessage());
+            }
+        })
+    ;}
 }

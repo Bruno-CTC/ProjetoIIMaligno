@@ -4,19 +4,26 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.SQLException;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.company.classes.*;
+import com.company.sql.BD;
+import com.company.sql.MeuResultSet;
 
 public class Main {
-    static JFrame janela;
-    static final Dimension tamanho = new Dimension(1000, 750);
-    static JButton btnCriar, btnEditar, btnSalvar, btnSair;
+    static JFrame janela; //Cria a janela que vai ter as tabelas, os botões, etc.
+    static final Dimension tamanho = new Dimension(1000, 750); //Seta o tamanho dessa janela
+    static JButton btnCriar, btnEditar, btnSalvar, btnSair; //Cria cada botão (com o nome de sua função)
     static JLabel lbDesenvolvedores, lbJogos;
     static JTable tbDesenvolvedores, tbJogos;
     static int mouseX, mouseY;
 
     public static void main(String[] args) {
+        AtomicInteger proxJogo = new AtomicInteger();
+        AtomicInteger proxDev = new AtomicInteger();
+        //Exibe na Tabela Desenvolvedores o nome de cada campo
         Vector<Vector<Object>> desenvolvedores = new Vector<>();
         Vector<String> nomesVarDev = new Vector<>();
         nomesVarDev.add("ID");
@@ -45,6 +52,7 @@ public class Main {
             System.out.println(ex.getMessage());
         }
 
+        //Exibe na Tabela Jogos o nome de cada campo
         Vector<Vector<Object>> jogos = new Vector<>();
         Vector<String> nomesVarJogos = new Vector<>();
         nomesVarJogos.add("ID");
@@ -75,6 +83,7 @@ public class Main {
             System.out.println(ex.getMessage());
         }
 
+        //Algumas configurações de Janela
         janela = new JFrame("Banco de Dados");
         Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
         janela.setLocation(size.width / 2 - tamanho.width / 2, size.height / 2 - tamanho.height / 2);
@@ -106,16 +115,81 @@ public class Main {
         btnCriar = new JButton("Novo Dev");
         btnCriar.setBounds(10, tamanho.height - 40, 105, 25);
         janela.add(btnCriar);
+        btnCriar.addActionListener(e -> {
+            try{
+                while(Desenvolvedores.getDesenvolvedores().next())
+                {
+                    String sql;
+
+                    sql = "SELECT COUNT(*) AS total " +
+                            "FROM JOGOS.DESENVOLVEDOR";
+
+                    BD.COMANDO.prepareStatement (sql);
+                    MeuResultSet resultado = (MeuResultSet)BD.COMANDO.executeQuery ();
+                    proxDev.set(resultado.getInt("total")+1);
+                }
+            }
+            catch (Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            new JanelaEditarDesenvolvedor(janela, proxDev.get());
+        });
 
         btnCriar = new JButton("Novo Jogo");
         btnCriar.setBounds(510, tamanho.height - 40, 105, 25);
         janela.add(btnCriar);
+        btnCriar.addActionListener(e -> {
+            try{
+                String sql;
+
+                sql = "SELECT COUNT(*) as total " +
+                        "FROM JOGOS.JOGO";
+
+                BD.COMANDO.prepareStatement (sql);
+                MeuResultSet resultado = (MeuResultSet)BD.COMANDO.executeQuery ();
+                proxJogo.set(resultado.getInt("total")+1);
+            }
+            catch (Exception ex){
+                System.out.println(ex.getMessage());
+            }
+            new JanelaEditarJogo(janela, proxJogo.get());
+        });
         //painelArrastavel.add(btnCriar);
 
-        btnEditar = new JButton("Editar");
+        btnEditar = new JButton("Salvar Edição");
         btnEditar.setBounds(5, 5, 95, 30);
-        btnEditar.addActionListener(e -> {
-            new JanelaEditarJogo(janela);
+        btnCriar.addActionListener(e -> {
+            int Devs = tbDesenvolvedores.getRowCount();
+            int Jogos = tbJogos.getRowCount();
+            try
+            {
+                for(int i = 1; i < Devs; i++)
+                {
+                    int idDev = Integer.parseInt((String) tbDesenvolvedores.getModel().getValueAt(i, 1));
+                    String nome = (String) tbDesenvolvedores.getModel().getValueAt(i, 2);
+                    int idade = Integer.parseInt((String) tbDesenvolvedores.getModel().getValueAt(i, 3));
+                    String empresa = (String) tbDesenvolvedores.getModel().getValueAt(i, 4);
+                    int horas = Integer.parseInt((String) tbDesenvolvedores.getModel().getValueAt(i, 5));
+                    float salario = Float.parseFloat((String) tbDesenvolvedores.getModel().getValueAt(i, 6));
+                    Desenvolvedor altDev = new Desenvolvedor(idDev, horas, idade, nome, empresa, salario);
+                    Desenvolvedores.alterar(altDev);
+                }
+                for(int i = 1; i < Jogos; i++)
+                {
+                    int idJogo = Integer.parseInt((String) tbJogos.getModel().getValueAt(i, 1));
+                    int idDev = Integer.parseInt((String) tbJogos.getModel().getValueAt(i, 2));
+                    String nome = (String) tbJogos.getModel().getValueAt(i, 3);
+                    Date Data = Integer.parseInt((String) tbJogos.getModel().getValueAt(i, 3));
+                    Long vendas = Long.parseLong((String) tbJogos.getModel().getValueAt(i, 4)));
+                    float salario = Float.parseFloat((String) tbJogos.getModel().getValueAt(i, 6));
+                    Jogo altDev = new Jogo(idJogo, idDev, aval, vendas, nome, salario);
+                    Desenvolvedores.alterar(altDev);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.out.println(ex.getMessage());
+            }
         });
         painelArrastavel.add(btnEditar);
 
@@ -123,10 +197,6 @@ public class Main {
         btnSair.setBounds(tamanho.width - 70, 5, 60, 30);
         btnSair.addActionListener(e -> janela.dispatchEvent(new WindowEvent(janela, WindowEvent.WINDOW_CLOSING)));
         painelArrastavel.add(btnSair);
-
-        btnSalvar = new JButton("Salvar");
-        btnSalvar.setBounds(110, 5, 95, 30);
-        painelArrastavel.add(btnSalvar);
 
         janela.add(painelArrastavel);
 
