@@ -68,6 +68,9 @@ public class JanelaEditarDesenvolvedor extends JFrame {
             try {
                 var novoDev = new Desenvolvedor(idDev, horas, idade, nome, empresa, salario);
                 Desenvolvedores.incluir(novoDev);
+                Main.Devs.add(novoDev);
+                Main.updateTables();
+
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }

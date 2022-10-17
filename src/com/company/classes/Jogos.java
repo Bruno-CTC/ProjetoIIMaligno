@@ -54,7 +54,7 @@ public class Jogos
 
             BD.COMANDO.setInt    (1, jogo.getIdJogo());
             BD.COMANDO.setInt    (2, jogo.getIdDesenvolvedor());
-            BD.COMANDO.setInt    (3, jogo.getAvaliacao());
+            BD.COMANDO.setFloat    (3, jogo.getAvaliacao());
             BD.COMANDO.setLong   (4, jogo.getVendas());
             BD.COMANDO.setString (5, jogo.getNome());
             BD.COMANDO.setDate   (6, new java.sql.Date(jogo.getDataLancamento().getTime()));
@@ -66,7 +66,7 @@ public class Jogos
         catch (SQLException erro)
         {
             BD.COMANDO.rollback();
-            throw new Exception ("Erro ao inserir jogo.");
+            throw new Exception (erro.getMessage());
         }
     }
 
@@ -124,7 +124,7 @@ public class Jogos
 
             BD.COMANDO.setInt    (1, jogo.getIdJogo());
             BD.COMANDO.setInt    (2, jogo.getIdDesenvolvedor());
-            BD.COMANDO.setInt    (3, jogo.getAvaliacao());
+            BD.COMANDO.setFloat    (3, jogo.getAvaliacao());
             BD.COMANDO.setLong   (4, jogo.getVendas());
             BD.COMANDO.setString (5, jogo.getNome());
             BD.COMANDO.setDate   (6, new java.sql.Date(jogo.getDataLancamento().getTime()));

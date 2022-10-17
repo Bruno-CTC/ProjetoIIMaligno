@@ -2,7 +2,6 @@ package com.company;
 
 import javax.swing.*;
 import java.sql.Date;
-import java.text.SimpleDateFormat;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.company.classes.*;
@@ -12,10 +11,13 @@ public class JanelaEditarJogo extends JFrame {
     String nome;
     long vendas;
     float preco;
-    int aval;
+    float aval;
     public JanelaEditarJogo(JFrame parent, int idJogo) {
         super("Criar");
-        AtomicReference<Date> data = null;
+        if (Main.Devs.size() == 0) {
+            JOptionPane.showMessageDialog(null, "Nenhum desenvolvedor cadastrado.");
+            return;
+        }
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setSize(500, 500);
         setLocationRelativeTo(parent);
@@ -33,9 +35,12 @@ public class JanelaEditarJogo extends JFrame {
         JLabel lbIDDev = new JLabel("ID Desenvolvedor", SwingConstants.CENTER);
         lbIDDev.setBounds(10, 80, 465, 30);
         add(lbIDDev);
-        JTextField txtIDDev = new JTextField("");
-        txtIDDev.setBounds(10, 110, 465, 30);
-        add(txtIDDev);
+        JComboBox cbDev = new JComboBox();
+        cbDev.setBounds(10, 110, 465, 30);
+        for (Desenvolvedor dev : Main.Devs) {
+            cbDev.addItem(dev.getNome());
+        }
+        add(cbDev);
 
         JLabel lbVendas = new JLabel("Vendas", SwingConstants.CENTER);
         lbVendas.setBounds(10, 150, 465, 30);
@@ -69,10 +74,15 @@ public class JanelaEditarJogo extends JFrame {
         btnSalvar.setBounds(200, 425, 100, 30);
         add(btnSalvar);
         btnSalvar.addActionListener(e -> {
-            idDev = Integer.parseInt(txtIDDev.getText());
+            idDev = cbDev.getSelectedIndex();
             nome = txtNome.getText();
+            String[] msg = txtData.getText().split("-");
+            Date data = null;
             try{
-                data.set((Date) new SimpleDateFormat("dd/MM/yyyy").parse(txtData.getText()));
+                data = Date.valueOf(txtData.getText());
+                /*data = Date.valueOf(
+                        String.format("%s-%s-%s", msg[2], msg[1], msg[0])
+                );*/
             }
             catch (Exception ex)
             {
@@ -81,10 +91,12 @@ public class JanelaEditarJogo extends JFrame {
             }
             vendas = Long.parseLong(txtVendas.getText());
             preco = Float.parseFloat(txtPreco.getText());
-            aval = Integer.parseInt(txtAvaliacao.getText());
+            aval = Float.parseFloat(txtAvaliacao.getText());
             try{
-                var novoJogo = new Jogo(idJogo, idDev, aval, vendas, nome, data.get(), preco);
+                var novoJogo = new Jogo(idJogo, idDev, aval, vendas, nome, data, preco);
                 Jogos.incluir(novoJogo);
+                Main.Games.add(novoJogo);
+                Main.updateTables();
             }
             catch (Exception ex)
             {

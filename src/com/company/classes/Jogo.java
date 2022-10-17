@@ -4,13 +4,13 @@ import java.util.Date;
 
 public class Jogo
 {
-    int    idJogo, idDesenvolvedor, avaliacao;
+    int    idJogo, idDesenvolvedor;
     long   vendas;
     String nome;
     Date   dataLancamento;
-    float  preco;
+    float  preco, avaliacao;
 
-    public Jogo(int idJogo, int idDesenvolvedor, int avaliacao, long vendas, String nome, Date dataLancamento, float preco) throws Exception
+    public Jogo(int idJogo, int idDesenvolvedor, float avaliacao, long vendas, String nome, Date dataLancamento, float preco) throws Exception
     {
         this.setIdJogo          (idJogo);
         this.setIdDesenvolvedor (idDesenvolvedor);
@@ -45,21 +45,22 @@ public class Jogo
     {
         return preco;
     }
-    public int getAvaliacao()
+    public float getAvaliacao()
     {
         return avaliacao;
     }
 
     public void setIdJogo(int idJogo) throws Exception
     {
-        if(idJogo <= 0)
+        if(idJogo < 0)
+
             throw new Exception("id do jogo invalido.");
 
         this.idJogo = idJogo;
     }
     public void setIdDesenvolvedor(int idDesenvolvedor) throws Exception
     {
-        if(idDesenvolvedor <= 0)
+        if(idDesenvolvedor < 0)
             throw new Exception("id do desenvolvedor invalido.");
 
         this.idDesenvolvedor = idDesenvolvedor;
@@ -89,7 +90,7 @@ public class Jogo
 
         this.preco = preco;
     }
-    public void setAvaliacao(int avaliacao) throws Exception
+    public void setAvaliacao(float avaliacao) throws Exception
     {
         if(avaliacao < 0)
             throw new Exception("Avaliacao invalida.");
@@ -133,7 +134,7 @@ public class Jogo
 
         ret = 3 * ret + Integer.valueOf(this.idJogo).hashCode();
         ret = 5 * ret + Integer.valueOf(this.idDesenvolvedor).hashCode();
-        ret = 7 * ret + Integer.valueOf(this.avaliacao).hashCode();
+        ret = 7 * ret + Float.valueOf(this.avaliacao).hashCode();
         ret = 11 * ret + Long.valueOf(this.vendas).hashCode();
         ret = 13 * ret + this.nome.hashCode();
         ret = 17 * ret + this.dataLancamento.hashCode();

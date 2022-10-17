@@ -43,7 +43,7 @@ public class Desenvolvedor
 
     public void setIdDesenvolvedor(int idDesenvolvedor) throws Exception
     {
-        if(idDesenvolvedor <= 0)
+        if(idDesenvolvedor < 0)
             throw new Exception("id do desenvolvedor invalido.");
 
         this.idDesenvolvedor = idDesenvolvedor;
