@@ -94,7 +94,16 @@ public class JanelaEditarJogo extends JFrame {
             aval = Float.parseFloat(txtAvaliacao.getText());
             try{
                 var novoJogo = new Jogo(idJogo, idDev, aval, vendas, nome, data, preco);
-                Jogos.incluir(novoJogo);
+                String sql = "INSERT INTO JOGOS.JOGO" +
+                        "(IDJOGO,IDDESENVOLVEDOR,AVALIACAO,VENDAS,NOME,DATALANCAMENTO,PRECO) " +
+                        "VALUES " +
+                        String.format("(%o,%o," + aval, idJogo, idDev) +
+                        String.format(",%o,'%s','" +
+                                data +
+                                "'," +
+                                preco +
+                                ");", vendas, nome);
+                Main.Comandos.add(sql);
                 Main.Games.add(novoJogo);
                 Main.updateTables();
             }
@@ -102,6 +111,7 @@ public class JanelaEditarJogo extends JFrame {
             {
                 System.out.println(ex.getMessage());
             }
+            dispose();
         });
     }
 }

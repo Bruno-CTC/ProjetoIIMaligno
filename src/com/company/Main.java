@@ -1,28 +1,20 @@
 package com.company;
 
 import javax.swing.*;
-import javax.swing.event.CellEditorListener;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.DocumentEvent;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.sql.Date;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Vector;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 
 import com.company.classes.*;
 import com.company.sql.BD;
-import com.company.sql.MeuResultSet;
 
 public class Main {
     static JFrame janela; //Cria a janela que vai ter as tabelas, os botões, etc.
     static final Dimension tamanho = new Dimension(1000, 750); //Seta o tamanho dessa janela
-    static JButton btnCriar, btnEditar, btnSair, btnDel; //Cria cada botão (com o nome de sua função)
+    static JButton btnCriar, btnSalvar, btnSair, btnDel; //Cria cada botão (com o nome de sua função)
     static JLabel lbDesenvolvedores, lbJogos;
     static JTable tbDesenvolvedores, tbJogos;
     static int mouseX, mouseY;
@@ -32,6 +24,32 @@ public class Main {
     public static ArrayList<Desenvolvedor> Devs = new ArrayList<>();
     public static Queue<String> Comandos = new LinkedList<>();
 
+    static int proxJogo = 0;
+    static int proxDev = 0;
+
+    public static void salvar()
+    {
+        try
+        {
+            for (String comando : Comandos)
+            {
+                BD.COMANDO.prepareStatement(comando);
+                BD.COMANDO.executeUpdate();
+                BD.COMANDO.commit();
+            }
+        }
+        catch (Exception ex)
+        {
+            try {
+                BD.COMANDO.rollback();
+            } catch (SQLException throwables) {
+                JOptionPane.showMessageDialog(null, throwables.getMessage());
+            }
+            JOptionPane.showMessageDialog(null, ex.getMessage());
+        }
+        JOptionPane.showMessageDialog(null, "Alterações salvas com sucesso!");
+        Comandos.clear();
+    }
     public static void updateTables()
     {
         updating = true;
@@ -48,8 +66,6 @@ public class Main {
         updating = false;
     }
     public static void main(String[] args) {
-        AtomicInteger proxJogo = new AtomicInteger();
-        AtomicInteger proxDev = new AtomicInteger();
         Vector<String> nomesVarDev = new Vector<>();
         nomesVarDev.add("ID");
         nomesVarDev.add("Nome");
@@ -124,69 +140,55 @@ public class Main {
         btnCriar.setBounds(10, tamanho.height - 40, 105, 25);
         janela.add(btnCriar);
         btnCriar.addActionListener(e -> {
-            try{
-                String sql;
-
-                sql = "SELECT COUNT(*) AS total " +
-                        "FROM JOGOS.DESENVOLVEDOR";
-
-                BD.COMANDO.prepareStatement (sql);
-                MeuResultSet resultado = (MeuResultSet)BD.COMANDO.executeQuery ();
-                resultado.first();
-                proxDev.set(resultado.getInt(1));
+            proxDev = 0;
+            boolean achouId = false;
+            while (!achouId)
+            {
+                for (Desenvolvedor dev : Devs)
+                {
+                    if (dev.getIdDesenvolvedor() == proxDev)
+                    {
+                        proxDev++;
+                    }
+                    else
+                    {
+                        achouId = true;
+                    }
+                }
             }
-            catch (Exception ex){
-                System.out.println(ex.getMessage());
-            }
-            new JanelaEditarDesenvolvedor(janela, proxDev.get());
+            new JanelaEditarDesenvolvedor(janela, proxDev);
         });
 
         btnCriar = new JButton("Novo Jogo");
         btnCriar.setBounds(510, tamanho.height - 40, 105, 25);
         janela.add(btnCriar);
         btnCriar.addActionListener(e -> {
-            try{
-                String sql;
-
-                sql = "SELECT COUNT(*) AS total " +
-                        "FROM JOGOS.JOGO";
-
-                BD.COMANDO.prepareStatement (sql);
-                MeuResultSet resultado = (MeuResultSet)BD.COMANDO.executeQuery ();
-                resultado.first();
-                proxJogo.set(resultado.getInt(1));
-            }
-            catch (Exception ex){
-                System.out.println(ex.getMessage());
-            }
-            new JanelaEditarJogo(janela, proxJogo.get());
-        });
-
-        btnEditar = new JButton("Salvar Edição");
-        btnEditar.setBounds(5, 5, 115, 30);
-        btnEditar.addActionListener(e -> {
-            try
+            proxJogo = 0;
+            boolean achouIdJogo = false;
+            while (!achouIdJogo)
             {
-                for (String comando : Comandos)
+                for (Jogo jogo : Games)
                 {
-                    BD.COMANDO.prepareStatement(comando);
-                    BD.COMANDO.executeUpdate();
-                    BD.COMANDO.commit();
+                    if (jogo.getIdJogo() == proxJogo)
+                    {
+                        proxJogo++;
+                    }
+                    else
+                    {
+                        achouIdJogo = true;
+                        break;
+                    }
                 }
             }
-            catch (Exception ex)
-            {
-                try {
-                    BD.COMANDO.rollback();
-                } catch (SQLException throwables) {
-                    JOptionPane.showMessageDialog(null, throwables.getMessage());
-                }
-                JOptionPane.showMessageDialog(null, ex.getMessage());
-            }
-            JOptionPane.showMessageDialog(null, "Alterações salvas com sucesso!");
-            Comandos.clear();
+            new JanelaEditarJogo(janela, proxJogo);
         });
-        painelArrastavel.add(btnEditar);
+
+        btnSalvar = new JButton("Salvar Edição");
+        btnSalvar.setBounds(5, 5, 115, 30);
+        btnSalvar.addActionListener(e -> {
+            salvar();
+        });
+        painelArrastavel.add(btnSalvar);
 
         btnDel = new JButton("Deletar Dev");
         btnDel.setBounds(120, tamanho.height - 40, 105, 25);
@@ -223,7 +225,23 @@ public class Main {
 
         btnSair = new JButton("Sair");
         btnSair.setBounds(tamanho.width - 70, 5, 60, 30);
-        btnSair.addActionListener(e -> janela.dispatchEvent(new WindowEvent(janela, WindowEvent.WINDOW_CLOSING)));
+        btnSair.addActionListener(e -> {
+            int res = JOptionPane.showConfirmDialog(null, "Você Tem Alterações não salvas, Deseja salvar e sair?", "Aviso", JOptionPane.YES_NO_CANCEL_OPTION);
+            if (res == JOptionPane.NO_OPTION)
+            {
+                // fecha mas não salva
+            }
+            else if (res == JOptionPane.CANCEL_OPTION)
+            {
+                // não fecha nem salva
+                return;
+            }
+            else
+            {
+                salvar();
+            }
+            janela.dispatchEvent(new WindowEvent(janela, WindowEvent.WINDOW_CLOSING));
+        });
         painelArrastavel.add(btnSair);
 
         janela.add(painelArrastavel);
@@ -261,8 +279,9 @@ public class Main {
                     case 0:
                         nomeVar = "IDDESENVOLVEDOR";
                         try {
-                            dev.setIdDesenvolvedor(Integer.parseInt((String)tbDesenvolvedores.getValueAt(e.getFirstRow(), id)));
-                            Devs.set(e.getFirstRow(), dev);
+                            JOptionPane.showMessageDialog(null, "O ID não pode ser mudado manualmente!");
+                            updateTables();
+                            return;
                         }
                         catch (Exception ex)
                         {
@@ -272,7 +291,20 @@ public class Main {
                     case 1:
                         nomeVar = "NOME";
                         try {
-                            dev.setNome((String) tbDesenvolvedores.getValueAt(e.getFirstRow(), id));
+                            String nome = (String) tbDesenvolvedores.getValueAt(e.getFirstRow(), id);
+                            if (nome.length() > 30)
+                            {
+                                JOptionPane.showMessageDialog(null, "Nome muito grande!");
+                                updateTables();
+                                return;
+                            }
+                            else if(nome.trim().isEmpty())
+                            {
+                                JOptionPane.showMessageDialog(null, "Não pode ter nome vazio!");
+                                updateTables();
+                                return;
+                            }
+                            dev.setNome(nome);
                             Devs.set(e.getFirstRow(), dev);
                         }
                         catch (Exception ex)
@@ -283,7 +315,18 @@ public class Main {
                     case 2:
                         nomeVar = "IDADE";
                         try {
-                            dev.setIdade(Integer.parseInt((String)tbDesenvolvedores.getValueAt(e.getFirstRow(), id)));
+                            String texto = (String)tbDesenvolvedores.getValueAt(e.getFirstRow(), id);
+                            int valor = -1;
+                            try {
+                                valor = Integer.parseInt(texto);
+                            }
+                            catch (Exception ex)
+                            {
+                                JOptionPane.showMessageDialog(null, "Numero inválido!");
+                                updateTables();
+                                return;
+                            }
+                            dev.setIdade(valor);
                             Devs.set(e.getFirstRow(), dev);
                         }
                         catch (Exception ex)
@@ -294,7 +337,20 @@ public class Main {
                     case 3:
                         nomeVar = "EMPRESA";
                         try {
-                            dev.setEmpresa((String)tbDesenvolvedores.getValueAt(e.getFirstRow(), id));
+                            String empresa = (String) tbDesenvolvedores.getValueAt(e.getFirstRow(), id);
+                            if (empresa.length() > 30)
+                            {
+                                JOptionPane.showMessageDialog(null, "Nome muito grande!");
+                                updateTables();
+                                return;
+                            }
+                            else if(empresa.trim().isEmpty())
+                            {
+                                JOptionPane.showMessageDialog(null, "Não pode ter nome vazio!");
+                                updateTables();
+                                return;
+                            }
+                            dev.setEmpresa(empresa);
                             Devs.set(e.getFirstRow(), dev);
                         }
                         catch (Exception ex)
@@ -305,7 +361,18 @@ public class Main {
                     case 4:
                         nomeVar = "SALARIO";
                         try {
-                            dev.setSalario(Float.parseFloat((String)tbDesenvolvedores.getValueAt(e.getFirstRow(), id)));
+                            String texto = (String) tbDesenvolvedores.getValueAt(e.getFirstRow(), id);
+                            Devs.set(e.getFirstRow(), dev);
+                            float valor = -1;
+                            try {
+                                valor = Float.parseFloat(texto);
+                                dev.setSalario(valor);
+                            } catch (Exception ex) {
+                                JOptionPane.showMessageDialog(null, "Numero inválido!");
+                                updateTables();
+                                return;
+                            }
+                            dev.setSalario(valor);
                             Devs.set(e.getFirstRow(), dev);
                         }
                         catch (Exception ex)
@@ -316,7 +383,18 @@ public class Main {
                     case 5:
                         nomeVar = "HORAS";
                         try {
-                            dev.setIdDesenvolvedor(Integer.parseInt((String)tbDesenvolvedores.getValueAt(e.getFirstRow(), id)));
+                            String texto = (String)tbDesenvolvedores.getValueAt(e.getFirstRow(), id);
+                            int valor = -1;
+                            try {
+                                valor = Integer.parseInt(texto);
+                            }
+                            catch (Exception ex)
+                            {
+                                JOptionPane.showMessageDialog(null, "Numero inválido!");
+                                updateTables();
+                                return;
+                            }
+                            dev.setIdDesenvolvedor(valor);
                             Devs.set(e.getFirstRow(), dev);
                         }
                         catch (Exception ex)
@@ -365,7 +443,6 @@ public class Main {
             if (!updating)
             {
                 int id = e.getColumn();
-                System.out.println(id);
                 String nomeVar = null;
                 Jogo jogo = Games.get(e.getFirstRow());
                 switch(id)
@@ -373,8 +450,9 @@ public class Main {
                     case 0:
                         nomeVar = "IDJOGO";
                         try {
-                            jogo.setIdJogo(Integer.parseInt((String)tbJogos.getValueAt(e.getFirstRow(), id)));
-                            Games.set(e.getFirstRow(), jogo);
+                            JOptionPane.showMessageDialog(null, "O ID não pode ser mudado manualmente!");
+                            updateTables();
+                            return;
                         }
                         catch (Exception ex)
                         {
@@ -382,9 +460,25 @@ public class Main {
                         }
                         break;
                     case 1:
+                        int idDev = Integer.parseInt((String)tbJogos.getValueAt(e.getFirstRow(), id));
                         nomeVar = "IDDESENVOLVEDOR";
+                        boolean valido = false;
+                        for (Desenvolvedor dev : Devs)
+                        {
+                            if (idDev == dev.getIdDesenvolvedor())
+                            {
+                                valido = true;
+                                break;
+                            }
+                        }
+                        if (!valido)
+                        {
+                            JOptionPane.showMessageDialog(null, "Numero de desenvolvedor inválido");
+                            updateTables();
+                            return;
+                        }
                         try {
-                            jogo.setIdDesenvolvedor(Integer.parseInt((String)tbJogos.getValueAt(e.getFirstRow(), id)));
+                            jogo.setIdDesenvolvedor(idDev);
                             Games.set(e.getFirstRow(), jogo);
                         }
                         catch (Exception ex)

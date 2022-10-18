@@ -1,9 +1,11 @@
 package com.company;
 
 import com.company.classes.*;
+import com.company.sql.BD;
 
 import javax.swing.*;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 
 public class JanelaEditarDesenvolvedor extends JFrame {
@@ -67,13 +69,20 @@ public class JanelaEditarDesenvolvedor extends JFrame {
             salario = Float.parseFloat(txtSalario.getText());
             try {
                 var novoDev = new Desenvolvedor(idDev, horas, idade, nome, empresa, salario);
-                Desenvolvedores.incluir(novoDev);
+                String sql = "INSERT INTO JOGOS.DESENVOLVEDOR " +
+                            "(IDDESENVOLVEDOR,HORAS,IDADE,NOME,EMPRESA,SALARIO) " +
+                            "VALUES " +
+                            String.format("(%o,%o,%o,'%s','%s',", idDev, horas, idade, nome, empresa) +
+                            salario +
+                            ");";
+                Main.Comandos.add(sql);
                 Main.Devs.add(novoDev);
                 Main.updateTables();
 
             } catch (Exception ex) {
                 System.out.println(ex.getMessage());
             }
+            dispose();
         })
     ;}
 }
