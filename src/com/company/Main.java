@@ -29,24 +29,22 @@ public class Main {
 
     public static void salvar()
     {
-        try
-        {
-            for (String comando : Comandos)
-            {
-                BD.COMANDO.prepareStatement(comando);
-                BD.COMANDO.executeUpdate();
-                BD.COMANDO.commit();
+            for (String comando : Comandos) {
+                try {
+                    BD.COMANDO.prepareStatement(comando);
+                    BD.COMANDO.executeUpdate();
+                    BD.COMANDO.commit();
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                    try {
+                        BD.COMANDO.rollback();
+                    }
+                    catch (SQLException ex2)
+                    {
+                        JOptionPane.showMessageDialog(null, ex2.getMessage());
+                    }
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            try {
-                BD.COMANDO.rollback();
-            } catch (SQLException throwables) {
-                JOptionPane.showMessageDialog(null, throwables.getMessage());
-            }
-            JOptionPane.showMessageDialog(null, ex.getMessage());
-        }
         JOptionPane.showMessageDialog(null, "Alterações salvas com sucesso!");
         Comandos.clear();
     }
@@ -460,7 +458,18 @@ public class Main {
                         }
                         break;
                     case 1:
-                        int idDev = Integer.parseInt((String)tbJogos.getValueAt(e.getFirstRow(), id));
+                        String texto = (String)tbJogos.getValueAt(e.getFirstRow(), id);
+                        int idDev = -1;
+                        try
+                        {
+                            idDev = Integer.parseInt(texto);
+                        }
+                        catch(Exception ex)
+                        {
+                            JOptionPane.showMessageDialog(null, "Numero invalido!");
+                            updateTables();
+                            return;
+                        }
                         nomeVar = "IDDESENVOLVEDOR";
                         boolean valido = false;
                         for (Desenvolvedor dev : Devs)
@@ -489,7 +498,20 @@ public class Main {
                     case 2:
                         nomeVar = "NOME";
                         try {
-                            jogo.setNome((String)tbJogos.getValueAt(e.getFirstRow(), id));
+                            String nome = (String)tbJogos.getValueAt(e.getFirstRow(), id);
+                            if (nome.length() > 50)
+                            {
+                                JOptionPane.showMessageDialog(null, "Nome muito grande!");
+                                updateTables();
+                                return;
+                            }
+                            else if(nome.trim().isEmpty())
+                            {
+                                JOptionPane.showMessageDialog(null, "Não pode ter nome vazio!");
+                                updateTables();
+                                return;
+                            }
+                            jogo.setNome(nome);
                             Games.set(e.getFirstRow(), jogo);
                         }
                         catch (Exception ex)
@@ -505,13 +527,26 @@ public class Main {
                         }
                         catch (Exception ex)
                         {
-                            JOptionPane.showMessageDialog(null, ex.getMessage());
+                            JOptionPane.showMessageDialog(null, "Data inválida!");
+                            updateTables();
+                            return;
                         }
                         break;
                     case 4:
                         nomeVar = "VENDAS";
                         try {
-                            jogo.setVendas(Long.parseLong((String)tbJogos.getValueAt(e.getFirstRow(), id)));
+                            String texto2 = (String)tbJogos.getValueAt(e.getFirstRow(), id);
+                            long valor = -1;
+                            try {
+                                valor = Long.parseLong(texto2);
+                            }
+                            catch (Exception ex)
+                            {
+                                JOptionPane.showMessageDialog(null, "Numero inválido!");
+                                updateTables();
+                                return;
+                            }
+                            jogo.setVendas(valor);
                             Games.set(e.getFirstRow(), jogo);
                         }
                         catch (Exception ex)
@@ -522,7 +557,18 @@ public class Main {
                     case 5:
                         nomeVar = "PRECO";
                         try {
-                            jogo.setPreco(Float.parseFloat((String)tbJogos.getValueAt(e.getFirstRow(), id)));
+                            String texto3 = (String)tbJogos.getValueAt(e.getFirstRow(), id);
+                            float valor = -1;
+                            try {
+                                valor = Float.parseFloat(texto3);
+                            }
+                            catch (Exception ex)
+                            {
+                                JOptionPane.showMessageDialog(null, "Numero inválido!");
+                                updateTables();
+                                return;
+                            }
+                            jogo.setPreco(valor);
                             Games.set(e.getFirstRow(), jogo);
                         }
                         catch (Exception ex)
@@ -533,7 +579,18 @@ public class Main {
                     case 6:
                         nomeVar = "AVALIACAO";
                         try {
-                            jogo.setAvaliacao(Float.parseFloat((String)tbJogos.getValueAt(e.getFirstRow(), id)));
+                            String texto4 = (String)tbJogos.getValueAt(e.getFirstRow(), id);
+                            float valor = -1;
+                            try {
+                                valor = Float.parseFloat(texto4);
+                            }
+                            catch (Exception ex)
+                            {
+                                JOptionPane.showMessageDialog(null, "Numero inválido!");
+                                updateTables();
+                                return;
+                            }
+                            jogo.setAvaliacao(valor);
                             Games.set(e.getFirstRow(), jogo);
                         }
                         catch (Exception ex)
