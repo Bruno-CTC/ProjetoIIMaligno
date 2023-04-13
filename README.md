@@ -1,5 +1,5 @@
-# ProjetoIIMaligno
+# ProjetoICRUD
 
-Projeto 2 de Técnicas de Programação 2
+Projeto 1 de Arquitetura alguma cois ai
 
-Criado por Bruno Borges de Oliveira, Pedro Henrique Batista Nunes e Gabriel de Grabalos
+Criado por Bruno Borges de Oliveira, Pedro Henrique Batista Nunes e Victor Hugo Barbosa dos Santos
