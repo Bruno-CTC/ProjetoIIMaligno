@@ -13,7 +13,7 @@ public class BD {
                     new MeuPreparedStatement (
                             "com.microsoft.sqlserver.jdbc.SQLServerDriver",
                             "jdbc:sqlserver://regulus.cotuca.unicamp.br;databasename=BD22123",
-                            "BD22123", "x2f9V4A5");
+                            "BD22123", "pqp fds vai");
         }
         catch (Exception erro)
         {
